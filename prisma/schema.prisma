@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  password String
+}
+
+model Customer {
+  id          Int          @id @default(autoincrement())
+  name        String
+  phone       String
+  address     String?
+  email       String?
+  cars        Car[]
+  motorcycles Motorcycle[]
+}
+
+model Car {
+  id           Int        @id @default(autoincrement())
+  reg          String
+  manufacturer String
+  model        String
+  year         String
+  wheels       CarWheel[]
+  Customer     Customer?  @relation(fields: [customerId], references: [id])
+  customerId   Int?
+}
+
+model CarWheel {
+  id    Int      @id @default(autoincrement())
+  name  String
+  size  String
+  alloy Boolean?
+  tmps  Boolean?
+  Car   Car?     @relation(fields: [carId], references: [id])
+  carId Int?
+}
+
+model MotorcycleWheel {
+  id           Int         @id @default(autoincrement())
+  name         String
+  size         String
+  tube         Boolean?
+  Motorcycle   Motorcycle? @relation(fields: [motorcycleId], references: [id])
+  motorcycleId Int?
+}
+
+model Motorcycle {
+  id           Int               @id @default(autoincrement())
+  reg          String
+  manufacturer String
+  model        String
+  year         String
+  wheels       MotorcycleWheel[]
+  Customer     Customer?         @relation(fields: [customerId], references: [id])
+  customerId   Int?
+}
+
+model Invoice {
+  id          Int     @id @default(autoincrement())
+  number      String?
+  orderlist   Order?  @relation(fields: [orderId], references: [id])
+  description String?
+  orderId     Int?
+}
+
+model Order {
+  id        Int       @id @default(autoincrement())
+  number    String
+  vendor    Company   @relation(fields: [companyId], references: [id])
+  Invoice   Invoice[]
+  companyId Int
+}
+
+model Company {
+  id    Int     @id @default(autoincrement())
+  name  String
+  link  String?
+  Order Order[]
+}
